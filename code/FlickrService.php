@@ -5,6 +5,7 @@
  */
 class FlickrService extends RestfulService {
 	private static $api_key;
+	private $response;
 	
 	/**
  	* Creates a new FlickrService object.
@@ -70,12 +71,12 @@ class FlickrService extends RestfulService {
 			);
 		
 		$this->setQueryString($params);
-		$response = $this->request('');
+		$this->response = $this->request('');
 		
 		$results = new FlickrService_Photos();
-		$results->PhotoItems = $this->getAttributes($response->getBody(), 'photos', 'photo');	
+		$results->PhotoItems = $this->getAttributes($this->response->getBody(), 'photos', 'photo');	
 		if((int)$results->PhotoItems->Count() > 0)
-				$results->Paginate($this->getAttributes($response->getBody(), 'photos'));
+				$results->Paginate($this->getAttributes($this->response->getBody(), 'photos'));
 					
 		$results->addImageUrl($results->PhotoItems);
 		$results->addImagePageUrl($results->PhotoItems, $user_id); //gets individual image page url
@@ -94,8 +95,8 @@ class FlickrService extends RestfulService {
 			'api_key' => $this->getAPIKey()
 		);
 		$this->setQueryString($params);
-		$response = $this->request('');
-		$result = $this->getAttribute($response->getBody(), 'user', NULL, 'nsid');
+		$this->response = $this->request('');
+		$result = $this->getAttribute($this->response->getBody(), 'user', NULL, 'nsid');
 		return $result;
 	}
 	
@@ -110,8 +111,8 @@ class FlickrService extends RestfulService {
 			'api_key' => $this->getAPIKey()
 		);
 		$this->setQueryString($params);
-		$response = $this->request('');
-		$result = $this->getValue($response->getBody(), photo, title);
+		$this->response = $this->request('');
+		$result = $this->getValue($this->response->getBody(), photo, title);
 		return $result;
 	}
 	
@@ -130,17 +131,30 @@ class FlickrService extends RestfulService {
 			'api_key' => $this->getAPIKey()
 		);
 		$this->setQueryString($params);
-		$response = $this->request();
+		$this->response = $this->request();
 		
 		$results = new FlickrService_Photos();
-		$results->PhotoItems = $this->getAttributes($response->getBody(), 'photoset', 'photo');	
+		$results->PhotoItems = $this->getAttributes($this->response->getBody(), 'photoset', 'photo');	
 		if((int)$results->PhotoItems->Count() > 0)
-			$results->Paginate($this->getAttributes($response->getBody(), 'photoset'));
+			$results->Paginate($this->getAttributes($this->response->getBody(), 'photoset'));
 							
 		$results->addImageUrl($results->PhotoItems);
 		$results->addImagePageUrl($results->PhotoItems, $user); //gets individual image page url
 		
 		return $results;
+	}
+	
+	/**
+	 * Retrieves the photoset owner id
+	 */                               
+	function getPhotoSetOwner(){
+		if($this->response && $this->response->getBody()){
+			$photosets = $this->getAttributes($this->response->getBody(), 'photoset'); 
+			if($photosets){
+				$first = $photosets->First();
+				return $first->owner;
+			}                        
+		}
 	}
 	
 	/**
@@ -165,13 +179,13 @@ class FlickrService extends RestfulService {
 		);
 		
 		$this->setQueryString($params);
-		$response = $this->request();
+		$this->response = $this->request();
 		
 		$results = new FlickrService_Photos();
-		$results->PhotoItems = $this->getAttributes($response->getBody(), 'photos', 'photo');	
+		$results->PhotoItems = $this->getAttributes($this->response->getBody(), 'photos', 'photo');	
 
 		if((int)$results->PhotoItems->Count() > 0)
-				$results->Paginate($this->getAttributes($response->getBody(), 'photos'));
+				$results->Paginate($this->getAttributes($this->response->getBody(), 'photos'));
 					
 		$results->addImageUrl($results->PhotoItems);
 		$results->addImagePageUrl($results->PhotoItems, $username); //gets individual image page url

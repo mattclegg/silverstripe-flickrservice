@@ -82,6 +82,58 @@ class FlickrGallery extends Page {
 			$photoHTML .= "<span>" . _t('FlickrGallery.NOIMAGES','Sorry!  Gallery doesn\'t contain any images for this page.') . "</span>";
 		}
 		return $photoHTML;
+	} 
+	
+	
+	// returns a dataobjectset including all the photos
+	function getFlickrPhotos($page) {
+		$photos = $this->getFlickrPage($page);
+		$output = new DataObjectSet();
+		$count = 0;
+		$photoCount = 0;                  
+		$row = new DataObjectSet();
+		foreach($photos->PhotoItems as $photo) {
+			$photoCount++;
+			$row->push(new ArrayData(array(
+				"Title" => htmlentities($photo->title),
+				"Link" => "http://farm1.static.flickr.com/" . $photo->image_path .".jpg",
+				"Image" => "http://farm1.static.flickr.com/" .$photo->image_path. "_s.jpg",
+				"FlickrPageLink" => $this->getFlickrPageURL($photo)
+			)));
+			$count ++;
+			if($count == 8  || $photoCount == $this->NumberToShow){
+				$output->push(new ArrayData(array("Row" => $row)));
+				$row = new DataObjectSet();
+				$count = 0; 
+			}
+		}  
+		return $output;
+	}
+	
+	
+	// for any photo this creates the URL of the photo on flickr site
+	function getFlickrPageURL($photo){
+		switch ($this->Method){
+			case 1:
+				return 'http://flickr.com/photos/' . $photo->owner . '/' . $photo->id;
+				break;
+			case 2:
+				return 'http://flickr.com/photos/' . $photo->owner . '/' . $photo->id; 
+				break;
+			case 3:
+				$ownerID = $this->flickr->getPhotoSetOwner(); 
+				if($ownerID)
+					return 'http://flickr.com/photos/' . $ownerID . '/' . $photo->id; 
+				else
+					return false;
+				break; 
+		    case 4:
+				$ownerID = $this->flickr->getPhotoSetOwner(); 
+				if($ownerID)
+					return 'http://flickr.com/photos/' . $ownerID . '/' . $photo->id;
+				break;
+		}             
+		return "http://farm1.static.flickr.com/" . $photo->image_path .".jpg";
 	}
 
 	/**
