@@ -1,15 +1,15 @@
 <?php
 class FlickrGallery extends Page {
- 
+
 	// define your database fields here - for example we have author
 	static $db = array(
-			"User" => "Varchar",
-			"GroupID" => "Varchar", // This is the group ID, not the group NAME. It's in the format 377682@N20
-			"Method" => "Int",
-			"Photoset" => "Varchar",
-			"NumberToShow" => "Int",
-			"Tags" => "Varchar(200)",
-			"Sortby" => "Varchar"
+		"User" => "Varchar",
+		"GroupID" => "Varchar", // This is the group ID, not the group NAME. It's in the format 377682@N20
+		"Method" => "Int",
+		"Photoset" => "Varchar",
+		"NumberToShow" => "Int",
+		"Tags" => "Varchar(200)",
+		"Sortby" => "Varchar"
 	);
 	
 	static $defaults = array(
@@ -28,10 +28,10 @@ class FlickrGallery extends Page {
 	function getCMSFields() {
  
 		$fields = parent::getCMSFields();
-		 	$fields->addFieldToTab("Root.Content.Photos", new DropdownField("Method", _t('FlickrGallery.SELECT','Select'), array(
-				'1' => _t('FlickrGallery.TAKENBY','Photos taken by'),
-				'2' => _t('FlickrGallery.TAGGEDWITH','Photos tagged with'),
-				'3' => _t('FlickrGallery.FROMPHOTOSET','Photos from photoset'))));
+		$fields->addFieldToTab("Root.Content.Photos", new DropdownField("Method", _t('FlickrGallery.SELECT','Select'), array(
+			'1' => _t('FlickrGallery.TAKENBY','Photos taken by'),
+			'2' => _t('FlickrGallery.TAGGEDWITH','Photos tagged with'),
+			'3' => _t('FlickrGallery.FROMPHOTOSET','Photos from photoset'))));
 		$fields->addFieldToTab("Root.Content.Photos", new TextField("User", _t('FlickrGallery.USER','Flickr User')));
 		$fields->addFieldToTab("Root.Content.Photos", new TextField("Tags", _t('FlickrGallery.TAGS','Tags')));
 		$fields->addFieldToTab("Root.Content.Photos", new TextField("Photoset", _t('FlickrGallery.PHOTOSET','Photoset id')));
@@ -39,7 +39,7 @@ class FlickrGallery extends Page {
 		$fields->addFieldToTab("Root.Content.Photos", new DropdownField("Sortby", _t('FlickrGallery.SORTBY','Sort by'), array(
 			'date-posted-desc' => _t('FlickrGallery.MOSTRECENT','Most recent'),
 			'interestingness-desc' => _t('FlickrGallery.MOSTINTERESTING','Most interesting'))));
-		  return $fields;
+		return $fields;
 	}
 	
 	function getFlickrPage($page) {
@@ -65,11 +65,11 @@ class FlickrGallery extends Page {
 
 	function getFlickrPageHTML($page) {
 		$photos = $this->getFlickrPage($page);
-			
 		$photoHTML = "<div class='flickr' style='float:left'>";
 		foreach($photos->PhotoItems as $photo){
 			$caption = htmlentities("<a href='$photo->page_url'>" . _t('FlickrGallery.VIEWINFLICKR','View this in Flickr') . "</a>");
-			$photoHTML .=  '<a href="http://farm1.static.flickr.com/'.$photo->image_path . '.jpg" class="lightwindow" title="'.htmlentities($photo->title).'" caption="'.$caption.'"><img src="http://farm1.static.flickr.com/'.$photo->image_path.'_s.jpg" alt="'.htmlentities($photo->title).'"/></a>';
+			$title = htmlentities($photo->title);
+			$photoHTML .=  '<a href="http://farm1.static.flickr.com/{$photo->image_path}.jpg" class="lightwindow" title="$title" caption="$caption"><img src="http://farm1.static.flickr.com/{$photo->image_path}_s.jpg" alt="$title"/></a>';
 		}
 		$photoHTML .= "</div>";
 		
@@ -77,8 +77,7 @@ class FlickrGallery extends Page {
 			$photoHTML .= "<div class='pages'><div class='paginator'>";
 			$photoHTML .= $photos->getPages();
 			$photoHTML .= "</div><span class='results'>". sprintf(_t('FlickrGallery.TOTALPHOTOS',"(%s Photos)"),$photos->getTotalPhotos()) ."</span></div>";
-		}
-		else {
+		}else {
 			$photoHTML .= "<span>" . _t('FlickrGallery.NOIMAGES','Sorry!  Gallery doesn\'t contain any images for this page.') . "</span>";
 		}
 		return $photoHTML;
@@ -120,13 +119,10 @@ class FlickrGallery extends Page {
 				break;
 			case 3:
 				$ownerID = $this->flickr->getPhotoSetOwner(); 
-				if($ownerID)
-					return 'http://flickr.com/photos/' . $ownerID . '/' . $photo->id; 
-				else
-					return false;
+				return ($ownerID) ? 'http://flickr.com/photos/' . $ownerID . '/' . $photo->id : false;
 				break; 
 			 case 4:
-				$ownerID = $this->flickr->getPhotoSetOwner(); 
+				$ownerID = $this->flickr->getPhotoSetOwner();
 				if($ownerID)
 					return 'http://flickr.com/photos/' . $ownerID . '/' . $photo->id;
 				break;
@@ -181,12 +177,12 @@ class FlickrGallery_Controller extends Page_Controller {
 		return $this->getFlickrPageHTML($this->currentFlickrPage());
 	}
 	
-	function page() {
+	function result() {
 		return array();
 	}
 	
 	function currentFlickrPage() {
-		if($this->action == 'page' && is_numeric($this->urlParams['ID'])) return $this->urlParams['ID'];
+		if($this->action == 'result' && is_numeric($this->urlParams['ID'])) return $this->urlParams['ID'];
 		else return 1;
 	}
 	
