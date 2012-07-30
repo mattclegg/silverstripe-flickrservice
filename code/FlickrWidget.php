@@ -71,5 +71,3 @@ class FlickrWidget extends Widget {
 		);
 	}
 }
-
-?>

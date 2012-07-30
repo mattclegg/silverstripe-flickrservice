@@ -3,23 +3,23 @@ class FlickrGallery extends Page {
  
 	// define your database fields here - for example we have author
 	static $db = array(
-	   	"User" => "Varchar",
-	   	"GroupID" => "Varchar", // This is the group ID, not the group NAME. It's in the format 377682@N20
-	   	"Method" => "Int",
-	   	"Photoset" => "Varchar",
-	   	"NumberToShow" => "Int",
-	   	"Tags" => "Varchar(200)",
-	   	"Sortby" => "Varchar"
+			"User" => "Varchar",
+			"GroupID" => "Varchar", // This is the group ID, not the group NAME. It's in the format 377682@N20
+			"Method" => "Int",
+			"Photoset" => "Varchar",
+			"NumberToShow" => "Int",
+			"Tags" => "Varchar(200)",
+			"Sortby" => "Varchar"
 	);
-   
+	
 	static $defaults = array(
 		"Method" => 2,
 		"NumberToShow" => 20,
 		"Sortby" => "date-posted-desc"
 	);
-   
+	
 	static $icon = "flickrservice/images/flickr";
- 
+
 	/**
 	 * Add custom fields for this flickr gallery page
 	 *
@@ -28,7 +28,7 @@ class FlickrGallery extends Page {
 	function getCMSFields() {
  
 		$fields = parent::getCMSFields();
-       	$fields->addFieldToTab("Root.Content.Photos", new DropdownField("Method", _t('FlickrGallery.SELECT','Select'), array(
+		 	$fields->addFieldToTab("Root.Content.Photos", new DropdownField("Method", _t('FlickrGallery.SELECT','Select'), array(
 				'1' => _t('FlickrGallery.TAKENBY','Photos taken by'),
 				'2' => _t('FlickrGallery.TAGGEDWITH','Photos tagged with'),
 				'3' => _t('FlickrGallery.FROMPHOTOSET','Photos from photoset'))));
@@ -39,9 +39,9 @@ class FlickrGallery extends Page {
 		$fields->addFieldToTab("Root.Content.Photos", new DropdownField("Sortby", _t('FlickrGallery.SORTBY','Sort by'), array(
 			'date-posted-desc' => _t('FlickrGallery.MOSTRECENT','Most recent'),
 			'interestingness-desc' => _t('FlickrGallery.MOSTINTERESTING','Most interesting'))));
-        return $fields;
-   }
-   
+		  return $fields;
+	}
+	
 	function getFlickrPage($page) {
 		$flickr = new FlickrService();
 
@@ -84,13 +84,12 @@ class FlickrGallery extends Page {
 		return $photoHTML;
 	} 
 	
-	
 	// returns a dataobjectset including all the photos
 	function getFlickrPhotos($page) {
 		$photos = $this->getFlickrPage($page);
 		$output = new DataObjectSet();
 		$count = 0;
-		$photoCount = 0;                  
+		$photoCount = 0;
 		$row = new DataObjectSet();
 		foreach($photos->PhotoItems as $photo) {
 			$photoCount++;
@@ -110,7 +109,6 @@ class FlickrGallery extends Page {
 		return $output;
 	}
 	
-	
 	// for any photo this creates the URL of the photo on flickr site
 	function getFlickrPageURL($photo){
 		switch ($this->Method){
@@ -127,12 +125,12 @@ class FlickrGallery extends Page {
 				else
 					return false;
 				break; 
-		    case 4:
+			 case 4:
 				$ownerID = $this->flickr->getPhotoSetOwner(); 
 				if($ownerID)
 					return 'http://flickr.com/photos/' . $ownerID . '/' . $photo->id;
 				break;
-		}             
+		}				 
 		return "http://farm1.static.flickr.com/" . $photo->image_path .".jpg";
 	}
 
@@ -154,9 +152,9 @@ class FlickrGallery extends Page {
 class FlickrGallery_Controller extends Page_Controller {
 	function init() {
 		if(Director::fileExists(project() . "/css/FlickrGallery.css")) {
-		   Requirements::css(project() . "/css/FlickrGallery.css");
+			Requirements::css(project() . "/css/FlickrGallery.css");
 		} else {
-		   Requirements::css("flickrservice/css/FlickrGallery.css");
+			Requirements::css("flickrservice/css/FlickrGallery.css");
 		}
 		
 		Requirements::javascript( "flickrservice/javascript/prototype.js" );
@@ -191,6 +189,5 @@ class FlickrGallery_Controller extends Page_Controller {
 		if($this->action == 'page' && is_numeric($this->urlParams['ID'])) return $this->urlParams['ID'];
 		else return 1;
 	}
-   
+	
 }
-?>

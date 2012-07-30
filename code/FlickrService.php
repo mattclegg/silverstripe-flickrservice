@@ -317,5 +317,4 @@ class FlickrService_Photos extends ViewableData {
 			}
 	}
 		 
-	}
-?>
+}
