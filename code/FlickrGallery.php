@@ -69,7 +69,7 @@ class FlickrGallery extends Page {
 		foreach($photos->PhotoItems as $photo){
 			$caption = htmlentities("<a href='$photo->page_url'>" . _t('FlickrGallery.VIEWINFLICKR','View this in Flickr') . "</a>");
 			$title = htmlentities($photo->title);
-			$photoHTML .=  '<a href="http://farm1.static.flickr.com/{$photo->image_path}.jpg" class="lightwindow" title="$title" caption="$caption"><img src="http://farm1.static.flickr.com/{$photo->image_path}_s.jpg" alt="$title"/></a>';
+			$photoHTML .=  "<a href='http://farm1.static.flickr.com/{$photo->image_path}.jpg' class='lightwindow' title='$title' caption='$caption'><img src='http://farm1.static.flickr.com/{$photo->image_path}_s.jpg' alt='$title'/></a>";
 		}
 		$photoHTML .= "</div>";
 		
@@ -94,8 +94,8 @@ class FlickrGallery extends Page {
 			$photoCount++;
 			$row->push(new ArrayData(array(
 				"Title" => htmlentities($photo->title),
-				"Link" => "http://farm1.static.flickr.com/" . $photo->image_path .".jpg",
-				"Image" => "http://farm1.static.flickr.com/" .$photo->image_path. "_s.jpg",
+				"Link" => "http://farm1.static.flickr.com/{$photo->image_path}.jpg",
+				"Image" => "http://farm1.static.flickr.com/{$photo->image_path}_s.jpg",
 				"FlickrPageLink" => $this->getFlickrPageURL($photo)
 			)));
 			$count ++;
@@ -112,22 +112,22 @@ class FlickrGallery extends Page {
 	function getFlickrPageURL($photo){
 		switch ($this->Method){
 			case 1:
-				return 'http://flickr.com/photos/' . $photo->owner . '/' . $photo->id;
+				return "http://flickr.com/photos/{$photo->owner}/{$photo->id}";
 				break;
 			case 2:
-				return 'http://flickr.com/photos/' . $photo->owner . '/' . $photo->id; 
+				return "http://flickr.com/photos/{$photo->owner}/{$photo->id}"; 
 				break;
 			case 3:
 				$ownerID = $this->flickr->getPhotoSetOwner(); 
-				return ($ownerID) ? 'http://flickr.com/photos/' . $ownerID . '/' . $photo->id : false;
+				return ($ownerID) ? "http://flickr.com/photos/{$ownerID}/{$photo->id}" : false;
 				break; 
 			 case 4:
 				$ownerID = $this->flickr->getPhotoSetOwner();
 				if($ownerID)
-					return 'http://flickr.com/photos/' . $ownerID . '/' . $photo->id;
+					return "http://flickr.com/photos/{$ownerID}/{$photo->id}";
 				break;
 		}				 
-		return "http://farm1.static.flickr.com/" . $photo->image_path .".jpg";
+		return "http://farm1.static.flickr.com/{$photo->image_path}.jpg";
 	}
 
 	/**
